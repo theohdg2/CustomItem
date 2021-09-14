@@ -1,0 +1,9 @@
+name: CustomItem
+version: 2.0.0
+api: 4.0.0
+main: Refaltor\Natof\CustomItem\Loader
+website: https://discord.gg/bGGzWsrZH6
+description: Plugin library that allows to add items.
+authors:
+  - Refaltor # https://github.com/Refaltor77
+  - Natof # https://github.com/natof
