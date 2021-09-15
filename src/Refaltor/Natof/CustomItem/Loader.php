@@ -32,7 +32,10 @@ use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\plugin\PluginBase;
 use Refaltor\Natof\CustomItem\Events\Listeners\PacketListener;
+use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\BasicItem;
+use Refaltor\Natof\CustomItem\Items\FoodItem;
+use Refaltor\Natof\CustomItem\Items\SwordItem;
 use ReflectionObject;
 use const pocketmine\RESOURCE_PATH;
 
@@ -41,22 +44,22 @@ class Loader extends PluginBase
     /** @var array */
     public array $items = [];
 
-    /** @var ItemComponentPacket|null  */
+    /** @var ItemComponentPacket|null */
     public ?ItemComponentPacket $packet = null;
 
     /** @var array */
     public array $coreToNetValues = [];
 
-    /** @var array  */
+    /** @var array */
     public array $netToCoreValues = [];
 
-    /** @var array  */
+    /** @var array */
     public array $entries = [];
 
-    /** @var array  */
+    /** @var array */
     public array $simpleCoreToNetMapping = [];
 
-    /** @var array  */
+    /** @var array */
     public array $simpleNetToCoreMapping = [];
 
 
@@ -92,33 +95,33 @@ class Loader extends PluginBase
         $legacyStringToIntMap = json_decode($legacyStringToIntMapRaw, true);
         $legacyStringToIntMap = array_merge($add, $legacyStringToIntMap);
         $simpleMappings = [];
-        foreach($json["simple"] as $oldId => $newId){
+        foreach ($json["simple"] as $oldId => $newId) {
             $simpleMappings[$newId] = $legacyStringToIntMap[$oldId];
         }
-        foreach($legacyStringToIntMap as $stringId => $intId){
+        foreach ($legacyStringToIntMap as $stringId => $intId) {
             $simpleMappings[$stringId] = $intId;
         }
         $complexMappings = [];
-        foreach($json["complex"] as $oldId => $map){
-            foreach($map as $meta => $newId){
-                $complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int) $meta];
+        foreach ($json["complex"] as $oldId => $map) {
+            foreach ($map as $meta => $newId) {
+                $complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int)$meta];
             }
         }
 
 
-        $old = json_decode(file_get_contents(RESOURCE_PATH  . '/vanilla/required_item_list.json'), true);
+        $old = json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/required_item_list.json'), true);
         $add = $array["required_item_list"];
         $table = array_merge($old, $add);
         $params = [];
-        foreach($table as $name => $entry){
+        foreach ($table as $name => $entry) {
             $params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
         }
         $this->entries = $entries = (new ItemTypeDictionary($params))->getEntries();
-        foreach($entries as $entry){
+        foreach ($entries as $entry) {
             $stringId = $entry->getStringId();
             $netId = $entry->getNumericId();
-            if (isset($complexMappings[$stringId])){
-            }elseif(isset($simpleMappings[$stringId])){
+            if (isset($complexMappings[$stringId])) {
+            } elseif (isset($simpleMappings[$stringId])) {
                 $this->simpleCoreToNetMapping[$simpleMappings[$stringId]] = $netId;
                 $this->simpleNetToCoreMapping[$netId] = $simpleMappings[$stringId];
             }
@@ -160,43 +163,92 @@ class Loader extends PluginBase
             $components = CompoundTag::create()
                 ->setTag("components", CompoundTag::create()
                     ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setInt("damage", 10)
-                        ->setInt("creative_category", 3)
-                        ->setString("enchantable_slot", "armor_head")
-                        ->setInt("enchantable_value", 10)
-                        ->setString("creative_group", "itemGroup.name.helmet")
+                        ->setInt("max_stack_size", $item->getMaxStackSize())
                     )
                     ->setTag("minecraft:icon", CompoundTag::create()
                         ->setString("texture", $item->getTextureName())
                     )
-                    /*->setTag("minecraft:repairable", CompoundTag::create()
-                        ->setTag("repair_items", CompoundTag::create()
-                            ->setString("items","minecraft:stick")
-                            ->setInt("repair_amount", 50))
-                    )*/
-                    /*->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "foo:drill")))*/
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", 600)
+                    ->setShort("minecraft:identifier", $item->getItemIdentifier()->getId() + ($item->getItemIdentifier()->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
                     )
-                )
-                ->setTag("minecraft:armor", CompoundTag::create()
-                    ->setInt("protection", 5)
-                )
-                ->setTag("minecraft:wearable", CompoundTag::create()
-                    ->setInt("slot", 0))
+                );
+            $this->items[$item->toString()] = $components;
+        } else if ($item instanceof ArmorItem) {
+            $components = CompoundTag::create()
+                ->setTag("components", CompoundTag::create()
+                    ->setTag("item_properties", CompoundTag::create()
+                        ->setInt("max_stack_size", 1)
+                        ->setInt("use_duration", 32)
+                        ->setInt("creative_category", 3)
+                        ->setString("enchantable_slot", "") //todo
+                        ->setInt("enchantable_value", 10)
+                        ->setString("creative_group", "") //todo
+                    )
+                    ->setTag("minecraft:icon", CompoundTag::create()
+                        ->setString("texture", $item->getTextureName())
+                    )
+                    ->setTag("minecraft:durability", CompoundTag::create()
+                        ->setInt("max_durability", $item->getMaxDurability())
+                    )
+                    ->setTag("minecraft:armor", CompoundTag::create()
+                        ->setInt("protection", $item->getProtection())
+                    )
+                    ->setTag("minecraft:wearable", CompoundTag::create()
+                        ->setInt("slot", "") //todo
+                    )
+                    ->setShort("minecraft:identifier", $item->getItemIdentifier()->getId() + ($item->getItemIdentifier()->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
+                    )
+                );
+            $this->items[$item->toString()] = $components;
 
-                ->setShort("minecraft:identifier", $item->getItemIdentifier()->getId() + ($item->getItemIdentifier()->getId() > 0 ? 5000 : -5000))
-                ->setTag("minecraft:display_name", CompoundTag::create()
-                    ->setString("value", $item->getName())
-
-                    /*->setTag('minecraft:on_use_on', CompoundTag::create()
-                        ->setByte('on_use_on', 1)
-                    )*/
-                    ->setTag('minecraft:use_duration', CompoundTag::create()
-                        ->setByte('value', 1)
+        } else if ($item instanceof SwordItem) {
+            $components = CompoundTag::create()
+                ->setTag("components", CompoundTag::create()
+                    ->setTag("item_properties", CompoundTag::create()
+                        ->setInt("max_stack_size", 1)
+                        ->setByte("hand_equipped", true)
+                        ->setInt("creative_category", 3)
+                        ->setString("enchantable_slot", "sword")
+                        ->setInt("enchantable_value", 10)
+                        ->setString("creative_group", "itemGroup.name.sword")
+                    )
+                    ->setTag("minecraft:icon", CompoundTag::create()
+                        ->setString("texture", $item->getTextureName())
+                    )
+                    ->setTag("minecraft:durability", CompoundTag::create()
+                        ->setInt("max_durability", $item->getMaxDurability())
+                    )
+                    ->setTag("minecraft:weapon", CompoundTag::create()
+                        ->setTag("on_hurt_entity", CompoundTag::create()
+                            ->setString("event", $item->getName())))
+                    ->setShort("minecraft:identifier", $item->getItemIdentifier()->getId() + ($item->getItemIdentifier()->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
+                    )
+                );
+            $this->items[$item->toString()] = $components;
+        } else if ($item instanceof FoodItem) {
+            $components = CompoundTag::create()
+                ->setTag("components", CompoundTag::create()
+                    ->setTag("item_properties", CompoundTag::create()
+                        ->setInt("max_stack_size", $item->getMaxStackSize())
+                        ->setInt("use_duration", 32)
+                        ->setInt("use_animation", $item->getTypeFood())
+                    )
+                    ->setTag("minecraft:icon", CompoundTag::create()
+                        ->setString("texture", $item->getTextureName())
+                    )
+                    ->setTag('minecraft:food', CompoundTag::create()
+                        ->setByte('can_always_eat', 1)
+                        ->setFloat('nutrition', 20.00)
+                        ->setString('saturation_modifier', 'low')
+                    )
+                    ->setShort("minecraft:identifier", $item->getItemIdentifier()->getId() + ($item->getItemIdentifier()->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
                     )
                 );
             $this->items[$item->toString()] = $components;
