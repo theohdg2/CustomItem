@@ -20,6 +20,7 @@
 namespace Refaltor\Natof\CustomItem;
 
 use Exception;
+use FG\ASN1\Identifier;
 use pocketmine\block\Block;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\ArmorTypeInfo;
@@ -34,7 +35,11 @@ use pocketmine\plugin\PluginBase;
 use Refaltor\Natof\CustomItem\Interfaces\CustomInterface;
 use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\BasicItem;
+use Refaltor\Natof\CustomItem\Items\BootsItem;
+use Refaltor\Natof\CustomItem\Items\ChestPlateItem;
 use Refaltor\Natof\CustomItem\Items\FoodItem;
+use Refaltor\Natof\CustomItem\Items\HelmetItem;
+use Refaltor\Natof\CustomItem\Items\LeggingsItem;
 use Refaltor\Natof\CustomItem\Traits\UtilsTrait;
 
 class CustomItem extends PluginBase
@@ -72,13 +77,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = self::createBasicItem(new ItemIdentifier(1000, 0), 'apple');
-        $item->setTexture('apple');
-        $item->setInteractOnBlockListener(function (Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector)
-        {
-            $player->sendMessage('<block>: arete de me taper');
-        });
-        self::registerItem($item);
+        $item_test = self::createBasicItem(new ItemIdentifier(2500, 0), "Test");
+        $item_test->setTexture("apple");
+        self::registerItem($item_test);
     }
 
     /**
@@ -107,6 +108,25 @@ class CustomItem extends PluginBase
         return new BasicItem($itemIdentifier, $name);
     }
 
+    public static function createBootsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : BootsItem {
+        return new BootsItem($identifier, $armorTypeInfo, $name);
+    }
+
+    public static function createLeggingsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : LeggingsItem
+    {
+        return new LeggingsItem($identifier, $armorTypeInfo, $name);
+    }
+
+    public static function createChesPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem
+    {
+        return new ChestPlateItem($identifier, $armorTypeInfo, $name);
+    }
+
+    public static function createHelmetItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : HelmetItem
+    {
+        return new HelmetItem($identifier, $armorTypeInfo, $name);
+    }
+
     public static function createArmorItem(ItemIdentifier $itemIdentifier, ArmorTypeInfo $armorTypeInfo, string $name): ArmorItem {
         return new ArmorItem($itemIdentifier, $armorTypeInfo, $name);
     }
@@ -117,14 +137,14 @@ class CustomItem extends PluginBase
 
     public static function registerItem(Item $item): void {
         $components = null;
-        if ($item instanceof ArmorItem) {
+        if ($item instanceof bootsItem || $item instanceof LeggingsItem || $item instanceof ChestPlateItem || $item instanceof HelmetItem) {
             $components = CompoundTag::create()
                 ->setTag("components", CompoundTag::create()
                     ->setTag("item_properties", CompoundTag::create()
                         ->setInt("max_stack_size", 1)
                         ->setInt("use_duration", 32)
-                        ->setInt("creative_category", 3)
-                        ->setString("creative_group", "itemGroup.name.helmet")
+                        ->setInt("creative_category", $item->getCreativeCategory())
+                        ->setString("creative_group", $item->getArmorGroup())
                         ->setString("enchantable_slot", $item->getArmorSlot())
                         ->setInt("enchantable_value", 10)
                     )

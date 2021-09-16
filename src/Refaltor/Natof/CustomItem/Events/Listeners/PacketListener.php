@@ -42,7 +42,6 @@ class PacketListener implements Listener
         foreach ($packets as $packet) {
             if ($packet instanceof StartGamePacket) {
                 $packet->itemTable = $this->main->entries;
-                var_dump($packet->itemTable);
             }
         }
     }
@@ -55,7 +54,6 @@ class PacketListener implements Listener
             if ($action === PlayerActionPacket::ACTION_START_BREAK) {
                 $item = $player->getInventory()->getItemInHand();
                 if ($item instanceof Pickaxe) {
-                    $mining = $item->
                 }
             }
         }
