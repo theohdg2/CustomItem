@@ -129,7 +129,7 @@ class CustomItem extends PluginBase
                         ->setInt("enchantable_value", 10)
                     )
                     ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", 'apple')
+                        ->setString("texture", $item->getTexture())
                     )
                     ->setTag("minecraft:durability", CompoundTag::create()
                         ->setInt("max_durability", $item->getMaxDurability())
