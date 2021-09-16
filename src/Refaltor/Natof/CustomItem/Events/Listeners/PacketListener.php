@@ -20,7 +20,10 @@
 namespace Refaltor\Natof\CustomItem\Events\Listeners;
 
 use pocketmine\event\Listener;
+use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\item\Pickaxe;
+use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use Refaltor\Natof\CustomItem\CustomItem;
 
@@ -40,6 +43,20 @@ class PacketListener implements Listener
             if ($packet instanceof StartGamePacket) {
                 $packet->itemTable = $this->main->entries;
                 var_dump($packet->itemTable);
+            }
+        }
+    }
+
+    public function onPacketReceive(DataPacketReceiveEvent $event) {
+        $packet = $event->getPacket();
+        if ($packet instanceof PlayerActionPacket) {
+            $player = $event->getOrigin()->getPlayer();
+            $action = $packet->action;
+            if ($action === PlayerActionPacket::ACTION_START_BREAK) {
+                $item = $player->getInventory()->getItemInHand();
+                if ($item instanceof Pickaxe) {
+                    $mining = $item->
+                }
             }
         }
     }
