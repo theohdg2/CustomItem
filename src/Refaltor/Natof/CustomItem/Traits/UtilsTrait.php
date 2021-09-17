@@ -115,9 +115,9 @@ trait UtilsTrait
      * @throws Exception
      */
     public function start(CustomItem $customItem): void{
+        $this->registerEvents($customItem);
         $this->loadDataFiles($customItem);
         $this->packet = ItemComponentPacket::create(self::$components);
-        $this->registerEvents($customItem);
     }
 
 }

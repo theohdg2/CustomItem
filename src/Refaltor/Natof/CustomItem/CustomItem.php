@@ -77,9 +77,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item_test = self::createBasicItem(new ItemIdentifier(2500, 0), "Test");
-        $item_test->setTexture("apple");
-        self::registerItem($item_test);
+        $item = self::createChesPlateItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(7, 100, 0), 'Plastron en emeraude');
+        $item->setTexture('stick');
+        self::registerItem($item);
     }
 
     /**
@@ -109,22 +109,22 @@ class CustomItem extends PluginBase
     }
 
     public static function createBootsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : BootsItem {
-        return new BootsItem($identifier, $armorTypeInfo, $name);
+        return new BootsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 3), $name);
     }
 
     public static function createLeggingsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : LeggingsItem
     {
-        return new LeggingsItem($identifier, $armorTypeInfo, $name);
+        return new LeggingsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 2), $name);
     }
 
     public static function createChesPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem
     {
-        return new ChestPlateItem($identifier, $armorTypeInfo, $name);
+        return new ChestPlateItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 1), $name);
     }
 
     public static function createHelmetItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : HelmetItem
     {
-        return new HelmetItem($identifier, $armorTypeInfo, $name);
+        return new HelmetItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 0), $name);
     }
 
     public static function createArmorItem(ItemIdentifier $itemIdentifier, ArmorTypeInfo $armorTypeInfo, string $name): ArmorItem {
