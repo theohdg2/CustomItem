@@ -89,7 +89,6 @@ class CustomItem extends PluginBase
      */
     protected function onEnable(): void
     {
-        $this->saveConfig();
         $this->start($this);
     }
 

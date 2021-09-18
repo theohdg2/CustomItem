@@ -43,6 +43,6 @@ item:
     texture: "emerald_sword"
     damage: 1000
     durability: 1000
-    efficiency: 50
+    defense: 2
 
 

@@ -101,8 +101,13 @@ trait UtilsTrait
             }
         }
         foreach (self::$queue as $item) {
-            ItemFactory::getInstance()->register($item);
-            CreativeInventory::getInstance()->add($item);
+            if (!ItemFactory::getInstance()->isRegistered($item->getId())) {
+                ItemFactory::getInstance()->register($item);
+                CreativeInventory::getInstance()->add($item);
+            } else {
+                ItemFactory::getInstance()->register($item, true);
+                CreativeInventory::getInstance()->add($item);
+            }
         }
         $instance = ItemTranslator::getInstance();
         $ref = new ReflectionObject($instance);
@@ -125,25 +130,25 @@ trait UtilsTrait
                     CustomItem::registerItem($sword);
                     break;
                 case "boots":
-                    $boots = CustomItem::createBootsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 0), $key["name"]);
+                    $boots = CustomItem::createBootsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 0), $key["name"]);
                     $boots->setTexture($key["texture"]);
 
                     CustomItem::registerItem($boots);
                     break;
                 case "leggings":
-                    $leggings = CustomItem::createLeggingsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 1), $key["name"]);
+                    $leggings = CustomItem::createLeggingsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 1), $key["name"]);
                     $leggings->setTexture($key["texture"]);
 
                     CustomItem::registerItem($leggings);
                     break;
                 case "chestplate":
-                    $chesplate = CustomItem::createChesPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 2), $key["name"]);
+                    $chesplate = CustomItem::createChesPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 2), $key["name"]);
                     $chesplate->setTexture($key["texture"]);
 
                     CustomItem::registerItem($chesplate);
                     break;
                 case "helmet":
-                    $helmet = CustomItem::createHelmetItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 3), $key["name"]);
+                    $helmet = CustomItem::createHelmetItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 3), $key["name"]);
                     $helmet->setTexture($key["texture"]);
 
                     CustomItem::registerItem($helmet);
@@ -181,8 +186,9 @@ trait UtilsTrait
      * @throws Exception
      */
     public function start(CustomItem $customItem): void{
-        $this->registerEvents($customItem);
+        $this->saveConfig();
         $this->loadConfigFile();
+        $this->registerEvents($customItem);
         $this->loadDataFiles($customItem);
         $this->packet = ItemComponentPacket::create(self::$components);
     }
