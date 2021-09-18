@@ -31,18 +31,41 @@ item:
     efficiency: 50
 
   hoe:
-    id: 1063
+    id: 1064
     name: "hoe_config"
     texture: "emerald_sword"
     damage: 1000
     durability: 1000
 
   boots:
-    id: 1064
+    id: 1065
     name: "boots_config"
     texture: "emerald_sword"
     damage: 1000
     durability: 1000
     defense: 2
 
+  leggings:
+    id: 1066
+    name: "leggings_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    defense: 2
+
+  chestplate:
+    id: 1067
+    name: "chesplate_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    defense: 2
+
+  helmet:
+    id: 1068
+    name: "helmet_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    defense: 2
 
