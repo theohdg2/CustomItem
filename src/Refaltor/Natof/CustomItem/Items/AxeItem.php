@@ -43,6 +43,8 @@ class AxeItem extends Axe
     /** @var float  */
     private float $durability;
 
+
+
     public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, float $damageTools, float $durability)
     {
         $this->durability = $durability;
@@ -55,7 +57,6 @@ class AxeItem extends Axe
     {
         return $this->durability;
     }
-
 
     /**
      * @param string $path

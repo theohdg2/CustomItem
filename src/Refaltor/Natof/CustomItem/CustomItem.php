@@ -146,12 +146,8 @@ class CustomItem extends PluginBase
         return new SwordItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
-    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
-        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
-    }
-
     public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
-        return new AxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+        return new AxeItem($itemIdentifier, $name, ToolTier::IRON(), $damage, $durability);
     }
 
     public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
@@ -161,6 +157,12 @@ class CustomItem extends PluginBase
     public static function createHoe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
         return new HoeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
+
+    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
+        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    }
+
+
 
     public static function registerItem(Item $item): void {
         $components = null;
