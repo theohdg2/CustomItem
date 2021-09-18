@@ -1,0 +1,48 @@
+item:
+  sword:
+    id: 1060
+    name: "sword_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+
+  pickaxe:
+    id: 1061
+    name: "pickaxe_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    efficiency: 50
+
+  axe:
+    id: 1062
+    name: "axe_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    efficiency: 50
+
+  shovel:
+    id: 1063
+    name: "shovel_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    efficiency: 50
+
+  hoe:
+    id: 1063
+    name: "hoe_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+
+  boots:
+    id: 1064
+    name: "boots_config"
+    texture: "emerald_sword"
+    damage: 1000
+    durability: 1000
+    efficiency: 50
+
+
