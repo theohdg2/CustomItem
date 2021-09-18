@@ -43,10 +43,11 @@ class AxeItem extends Axe
     /** @var float  */
     private float $durability;
 
+    private float  $efficiency;
 
-
-    public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, float $damageTools, float $durability)
+    public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, float $damageTools, float $durability, float $efficiency)
     {
+        $this->efficiency = $efficiency;
         $this->durability = $durability;
         $this->damageTools = $damageTools;
         $this->texturePath = 'barrier';
@@ -57,6 +58,12 @@ class AxeItem extends Axe
     {
         return $this->durability;
     }
+
+    public function getMiningEfficiency(bool $isCorrectTool): float
+    {
+        return $this->efficiency;
+    }
+
 
     /**
      * @param string $path

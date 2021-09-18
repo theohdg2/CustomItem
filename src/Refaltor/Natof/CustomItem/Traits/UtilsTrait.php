@@ -21,12 +21,16 @@ namespace Refaltor\Natof\CustomItem\Traits;
 
 use Exception;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIdentifier;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+use pocketmine\Server;
+use pocketmine\utils\Config;
 use Refaltor\Natof\CustomItem\Events\Listeners\PacketListener;
 use Refaltor\Natof\CustomItem\Events\Listeners\PlayerListener;
 use Refaltor\Natof\CustomItem\CustomItem;
@@ -110,12 +114,75 @@ trait UtilsTrait
         $r2->setValue($instance, $customItem->simpleNetToCoreMapping);
     }
 
+    public function loadConfigFile(){
+        $config = $this->getConfig();
+        foreach ($config->get("item") as $item => $key) {
+            switch ($item){
+                case "sword":
+                    $sword = CustomItem::createSword(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"]);
+                    $sword->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($sword);
+                    break;
+                case "boots":
+                    $boots = CustomItem::createBootsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 0), $key["name"]);
+                    $boots->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($boots);
+                    break;
+                case "leggings":
+                    $leggings = CustomItem::createLeggingsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 1), $key["name"]);
+                    $leggings->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($leggings);
+                    break;
+                case "chestplate":
+                    $chesplate = CustomItem::createChesPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 2), $key["name"]);
+                    $chesplate->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($chesplate);
+                    break;
+                case "helmet":
+                    $helmet = CustomItem::createHelmetItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defence"], $key["durability"], 3), $key["name"]);
+                    $helmet->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($helmet);
+                    break;
+                case "pickaxe":
+                    $pickaxe = CustomItem::createPickaxe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $pickaxe->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($pickaxe);
+                    break;
+                case "hoe":
+                    $hoe = CustomItem::createHoe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"]);
+                    $hoe->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($hoe);
+                    break;
+                case "shovel":
+                    $shovel = CustomItem::createShovel(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $shovel->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($shovel);
+                    break;
+                case "axe":
+                    $axe = CustomItem::createAxe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $axe->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($axe);
+                    break;
+            }
+        }
+    }
+
     /**
      * @param CustomItem $customItem
      * @throws Exception
      */
     public function start(CustomItem $customItem): void{
         $this->registerEvents($customItem);
+        $this->loadConfigFile();
         $this->loadDataFiles($customItem);
         $this->packet = ItemComponentPacket::create(self::$components);
     }

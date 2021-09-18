@@ -34,6 +34,7 @@ use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\Server;
 use Refaltor\Natof\CustomItem\Interfaces\CustomInterface;
 use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\AxeItem;
@@ -95,6 +96,7 @@ class CustomItem extends PluginBase
     protected function onEnable(): void
     {
         $this->start($this);
+        $this->saveConfig();
     }
 
     /*
@@ -146,20 +148,20 @@ class CustomItem extends PluginBase
         return new SwordItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
-    public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
-        return new AxeItem($itemIdentifier, $name, ToolTier::IRON(), $damage, $durability);
+    public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+        return new AxeItem($itemIdentifier, $name, ToolTier::IRON(), $damage, $durability, $efficiency);
     }
 
-    public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
-        return new ShovelItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+        return new ShovelItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
     }
 
     public static function createHoe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
         return new HoeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
-    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
-        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
     }
 
 
