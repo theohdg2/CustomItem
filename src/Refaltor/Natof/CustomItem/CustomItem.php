@@ -26,6 +26,7 @@ use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
+use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
@@ -40,6 +41,8 @@ use Refaltor\Natof\CustomItem\Items\ChestPlateItem;
 use Refaltor\Natof\CustomItem\Items\FoodItem;
 use Refaltor\Natof\CustomItem\Items\HelmetItem;
 use Refaltor\Natof\CustomItem\Items\LeggingsItem;
+use Refaltor\Natof\CustomItem\Items\PickaxeItem;
+use Refaltor\Natof\CustomItem\Items\SwordItem;
 use Refaltor\Natof\CustomItem\Traits\UtilsTrait;
 
 class CustomItem extends PluginBase
@@ -77,9 +80,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = self::createChesPlateItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(7, 100, 0), 'Plastron en emeraude');
-        $item->setTexture('stick');
-        self::registerItem($item);
+       // $item = self::createChesPlateItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(7, 100, 0), 'Plastron en emeraude');
+       // $item->setTexture('stick');
+       // self::registerItem($item);
     }
 
     /**
@@ -133,6 +136,14 @@ class CustomItem extends PluginBase
 
     public static function createFoodItem(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore): FoodItem {
         return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore);
+    }
+
+    public static function createSword(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
+        return new SwordItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    }
+
+    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
+        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
     public static function registerItem(Item $item): void {
@@ -194,6 +205,63 @@ class CustomItem extends PluginBase
                         ->setByte('can_always_eat', 1)
                         ->setFloat('nutrition', $item->getFoodRestore())
                         ->setString('saturation_modifier', 'low')
+                    )
+                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
+                    )
+                );
+        } elseif ($item instanceof SwordItem){
+            $components = CompoundTag::create()
+                ->setTag("components", CompoundTag::create()
+                    ->setTag("item_properties", CompoundTag::create()
+                        ->setInt("max_stack_size", 1)
+                        ->setByte("hand_equipped", true)
+                        ->setInt("damage", $item->getAttackPoints())
+                        ->setInt("creative_category", $item->getCreativeCategory())
+                        ->setString("creative_group", "itemGroup.name.sword")
+                        ->setString("enchantable_slot", "sword")
+                        ->setInt("enchantable_value", 10)
+                    )
+                    ->setTag("minecraft:weapon", CompoundTag::create()
+                        ->setTag("on_hurt_entity", CompoundTag::create()
+                            ->setString("event", "event")
+                        )
+                    )
+                    ->setTag("minecraft:icon", CompoundTag::create()
+                        ->setString("texture", $item->getTexture())
+                    )
+                    ->setTag("minecraft:durability", CompoundTag::create()
+                        ->setInt("max_durability", $item->getMaxDurability())
+                    )
+                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
+                    ->setTag("minecraft:display_name", CompoundTag::create()
+                        ->setString("value", $item->getName())
+                    )
+                );
+
+        } elseif ($item instanceof PickaxeItem){
+            $components = CompoundTag::create()
+                ->setTag("components", CompoundTag::create()
+                    ->setTag("item_properties", CompoundTag::create()
+                        ->setInt("max_stack_size", 1)
+                        ->setByte("hand_equipped", true)
+                        ->setInt("damage", $item->getAttackPoints())
+                        ->setInt("creative_category", $item->getCreativeCategory())
+                        ->setString("creative_group", "itemGroup.name.pickaxe")
+                        ->setString("enchantable_slot", "pickaxe")
+                        ->setInt("enchantable_value", 10)
+                    )
+                    ->setTag("minecraft:weapon", CompoundTag::create()
+                        ->setTag("on_hurt_entity", CompoundTag::create()
+                            ->setString("event", "event")
+                        )
+                    )
+                    ->setTag("minecraft:icon", CompoundTag::create()
+                        ->setString("texture", $item->getTexture())
+                    )
+                    ->setTag("minecraft:durability", CompoundTag::create()
+                        ->setInt("max_durability", $item->getMaxDurability())
                     )
                     ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
                     ->setTag("minecraft:display_name", CompoundTag::create()

@@ -2,6 +2,8 @@ name: CustomItem
 version: 2.0.0
 api: 4.0.0
 main: Refaltor\Natof\CustomItem\CustomItem
+loadbefore:
+  - EmeraldMod #ByTheo
 description: API to add items
 website: http://potatoes-network.com/
 authors:

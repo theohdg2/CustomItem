@@ -61,7 +61,7 @@ class PacketListener implements Listener
         }
     }
 
-    public function onTool(DataPacketSendEvent $event): void {
+   /* public function onTool(DataPacketSendEvent $event): void {
         $packets = $event->getPackets();
         $targets = $event->getTargets();
         foreach ($packets as $packet) {
@@ -154,5 +154,5 @@ class PacketListener implements Listener
 
     private function blockHash(Position $pos): string {
         return implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()]);
-    }
+    }*/
 }
