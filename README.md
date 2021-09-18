@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./img./logo.png" width="200px">
+  <img src="./img/logoCustomItem.png" width="200px">
   <h1>CustomItem (API / Configuration)</h1>
 </div>
 
