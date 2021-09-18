@@ -21,7 +21,6 @@ namespace Refaltor\Natof\CustomItem\Traits;
 
 use Exception;
 use pocketmine\inventory\CreativeInventory;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;

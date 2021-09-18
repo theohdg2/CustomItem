@@ -19,14 +19,18 @@
 
 namespace Refaltor\Natof\CustomItem\Items;
 
+use pocketmine\block\Block;
 use pocketmine\item\Armor;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
+use pocketmine\item\ItemUseResult;
 use pocketmine\item\Pickaxe;
 use pocketmine\item\Sword;
 use pocketmine\item\TieredTool;
 use pocketmine\item\ToolTier;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class PickaxeItem extends Pickaxe
 {
@@ -54,6 +58,7 @@ class PickaxeItem extends Pickaxe
     {
         return $this->durability;
     }
+
 
 
     /**

@@ -20,21 +20,14 @@
 namespace Refaltor\Natof\CustomItem;
 
 use Exception;
-use FG\ASN1\Identifier;
-use pocketmine\block\Block;
-use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
-use pocketmine\item\Shovel;
 use pocketmine\item\ToolTier;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use Refaltor\Natof\CustomItem\Interfaces\CustomInterface;
 use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\AxeItem;
 use Refaltor\Natof\CustomItem\Items\BasicItem;
@@ -84,9 +77,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-       // $item = self::createChesPlateItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(7, 100, 0), 'Plastron en emeraude');
-       // $item->setTexture('stick');
-       // self::registerItem($item);
+        $item = self::createPickaxe(new ItemIdentifier(1000, 0), 'pioche en natof', 1, 100);
+        $item->setTexture('stick');
+        self::registerItem($item);
     }
 
     /**
