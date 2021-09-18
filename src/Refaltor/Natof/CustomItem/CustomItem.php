@@ -20,19 +20,14 @@
 namespace Refaltor\Natof\CustomItem;
 
 use Exception;
-use pocketmine\block\Block;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ToolTier;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
-use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
-use pocketmine\Server;
-use Refaltor\Natof\CustomItem\Interfaces\CustomInterface;
 use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\AxeItem;
 use Refaltor\Natof\CustomItem\Items\BasicItem;
@@ -82,9 +77,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = self::createPickaxe(new ItemIdentifier(5800, 0), 'pioche en natof', 1, 100, 5);
-        $item->setTexture('iron_pickaxe');
-        self::registerItem($item);
+        $item = CustomItem::createHelmetItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(2, 100, 0), 'Helmet Test');
+        $item->setTexture('iron_helmet');
+        CustomItem::registerItem($item);
     }
 
     /**

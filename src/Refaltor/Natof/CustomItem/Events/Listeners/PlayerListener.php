@@ -19,14 +19,9 @@
 
 namespace Refaltor\Natof\CustomItem\Events\Listeners;
 
-use pocketmine\block\Block;
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use Refaltor\Natof\CustomItem\CustomItem;
-use Refaltor\Natof\CustomItem\Items\AxeItem;
-use Refaltor\Natof\CustomItem\Items\PickaxeItem;
-use Refaltor\Natof\CustomItem\Items\ShovelItem;
 
 class PlayerListener implements Listener
 {

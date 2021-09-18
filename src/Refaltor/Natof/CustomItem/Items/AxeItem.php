@@ -21,15 +21,9 @@ namespace Refaltor\Natof\CustomItem\Items;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\item\Armor;
-use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Axe;
-use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ItemUseResult;
-use pocketmine\item\Pickaxe;
-use pocketmine\item\Sword;
-use pocketmine\item\TieredTool;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
