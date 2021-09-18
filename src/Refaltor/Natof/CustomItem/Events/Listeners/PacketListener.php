@@ -45,7 +45,7 @@ class PacketListener implements Listener
     public CustomItem $main;
 
     /** @var array  */
-    public array $players = [];
+    public array $handlers = [];
 
     public function __construct(CustomItem $main)
     {
@@ -65,63 +65,65 @@ class PacketListener implements Listener
     public function onPacketReceive(DataPacketReceiveEvent $event): void {
         $packet = $event->getPacket();
         if ($packet instanceof PlayerActionPacket) {
-            $cancel = false;
+            $handled = false;
             try {
                 $pos = new Vector3($packet->x, $packet->y, $packet->z);
                 $player = $event->getOrigin()->getPlayer();
                 if ($packet->action === PlayerActionPacket::ACTION_START_BREAK) {
                     $item = $player->getInventory()->getItemInHand();
                     $class = get_class($item);
-                    if (in_array($class, [AxeItem::class, ShovelItem::class, PickaxeItem::class])) {
-                        if ($pos->distanceSquared($player->getPosition()) < 10000) {
-                            $block = $player->getWorld()->getBlock($pos);
-                            $ev = new PlayerInteractEvent($player, $player->getInventory()->getItemInHand(), $block, null, $packet->face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
-                            if ($player->isSpectator()) {
-                                $ev->cancel();
-                            }
-                            $ev->call();
-                            if ($ev->isCancelled()) return;
-                            $frame = $player->getWorld()->getBlock($pos);
-                            if ($frame instanceof ItemFrame && !is_null($frame->getFramedItem())) {
-                                if (lcg_value() <= $frame->getItemDropChance()) {
-                                    $player->getWorld()->dropItem($frame->getPos(), $frame->getFramedItem());
-                                }
-                                $frame->setFramedItem($item);
-                                $frame->setItemRotation(0);
-                                return;
-                            }
-                            $block = $block->getSide($packet->face);
-                            if ($block->getId() === BlockLegacyIds::FIRE) {
-                                $player->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
-                                return;
-                            }
+                    if (!in_array($class, [AxeItem::class, ShovelItem::class, PickaxeItem::class])) return;
 
-                            if (!$player->isCreative()) {
-                                $cancel = true;
-                                $breakTime = ceil($block->getBreakInfo()->getBreakTime($player->getInventory()->getItemInHand()) * 20);
-                                if ($breakTime > 0) {
-                                    if ($breakTime > 10) $breakTime -= 10;
-                                    $this->scheduleTask(Position::fromObject($pos, $player->getWorld()), $player->getInventory()->getItemInHand(), $player, $breakTime);
-                                    $pk = new LevelEventPacket();
-                                    $pk->data = LevelEventPacket::EVENT_BLOCK_START_BREAK;
-                                    $pk->position = $pos;
-                                    $pk->evid = (int)(65535 / $breakTime);
-                                    $player->getNetworkSession()->sendDataPacket($pk);
-                                }
+                    if ($pos->distanceSquared($player->getPosition()) > 10000) return;
+
+                    $target = $player->getWorld()->getBlock($pos);
+
+                    $ev = new PlayerInteractEvent($player, $player->getInventory()->getItemInHand(), $target, null, $packet->face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
+                    if ($player->isSpectator()) {
+                        $ev->cancel();
+                    }
+
+                    $ev->call();
+                    if ($ev->isCancelled()) {
+                        return;
+                    }
+
+                    $frame = $player->getWorld()->getBlock($pos);
+                    if ($frame instanceof ItemFrame && !is_null($frame->getFramedItem())) {
+                        if (lcg_value() <= $frame->getItemDropChance()) {
+                            $player->getWorld()->dropItem($frame->getPos(), $frame->getFramedItem());
+                        }
+                        $frame->setFramedItem($item);
+                        $frame->setItemRotation(0);
+                        return;
+                    }
+                    $block = $target->getSide($packet->face);
+                    if ($block->getId() === BlockLegacyIds::FIRE) {
+                        $player->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
+                        return;
+                    }
+
+                    if (!$player->isCreative()) {
+                        $handled = true;
+                        $breakTime = ceil($target->getBreakInfo()->getBreakTime($player->getInventory()->getItemInHand()) * 20);
+                        if ($breakTime > 0) {
+                            if ($breakTime > 10) {
+                                $breakTime -= 10;
                             }
+                            $this->scheduleTask(Position::fromObject($pos, $player->getWorld()), $player->getInventory()->getItemInHand(), $player, $breakTime);
+                            $pk = new LevelEventPacket();
+                            $pk->data = LevelEventPacket::EVENT_BLOCK_START_BREAK;
+                            $pk->position = $pos;
+                            $pk->evid = (int)(65535 / $breakTime);
+                            $player->getNetworkSession()->sendDataPacket($pk);
                         }
                     }
                 } elseif ($packet->action === PlayerActionPacket::ACTION_ABORT_BREAK) {
-                    $pk = new LevelEventPacket();
-                    $pk->data = LevelEventPacket::EVENT_BLOCK_STOP_BREAK;
-                    $pk->position = $pos;
-                    $pk->evid = mt_rand();
-                    $player->getNetworkSession()->sendDataPacket($pk);
-                    $cancel = true;
+                    $handled = true;
                     $this->stopTask($player, Position::fromObject($pos, $player->getWorld()));
                 }
             } finally {
-                if ($cancel) {
+                if ($handled) {
                     $event->cancel();
                 }
             }
@@ -129,24 +131,26 @@ class PacketListener implements Listener
     }
 
     private function scheduleTask(Position $pos, Item $item, Player $player, float $breakTime): void {
-
         $handler = $this->main->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($pos, $item, $player): void {
             $player->breakBlock($pos);
-            unset($this->players[$player->getName()][implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()])]);
+            unset($this->handlers[$player->getName()][$this->blockHash($pos)]);
         }), (int)floor($breakTime));
         if (!isset($this->handlers[$player->getName()])) {
-            $this->players[$player->getName()] = [];
+            $this->handlers[$player->getName()] = [];
         }
-        $this->players[$player->getName()][implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()])] = $handler;
+        $this->handlers[$player->getName()][$this->blockHash($pos)] = $handler;
     }
 
     private function stopTask(Player $player, Position $pos): void {
-        if (!isset($this->handlers[$player->getName()][implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()])])) {
+        if (!isset($this->handlers[$player->getName()][$this->blockHash($pos)])) {
             return;
         }
-        $handler = $this->players[$player->getName()][implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()])];
+        $handler = $this->handlers[$player->getName()][$this->blockHash($pos)];
         $handler->cancel();
-        unset($this->players[$player->getName()][implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()])]);
+        unset($this->handlers[$player->getName()][$this->blockHash($pos)]);
     }
 
+    private function blockHash(Position $pos): string {
+        return implode(":", [$pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), $pos->getWorld()->getFolderName()]);
+    }
 }

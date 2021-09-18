@@ -20,13 +20,16 @@
 namespace Refaltor\Natof\CustomItem;
 
 use Exception;
+use pocketmine\block\Block;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ToolTier;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
+use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\Server;
 use Refaltor\Natof\CustomItem\Interfaces\CustomInterface;
