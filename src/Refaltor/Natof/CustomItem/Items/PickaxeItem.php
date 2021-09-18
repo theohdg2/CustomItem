@@ -62,9 +62,9 @@ class PickaxeItem extends Pickaxe
         return $this->durability;
     }
 
-    public function getMiningEfficiency(bool $isCorrectTool): float
+    public function getBaseMiningEfficiency(): float
     {
-        return $this->efficiency;
+      return $this->efficiency;
     }
 
 

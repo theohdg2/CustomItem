@@ -79,8 +79,8 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = self::createPickaxe(new ItemIdentifier(1000, 0), 'pioche en natof', 1, 100);
-        $item->setTexture('stick');
+        $item = self::createPickaxe(new ItemIdentifier(1000, 0), 'pioche en natof', 1, 100, 5);
+        $item->setTexture('iron_pickaxe');
         self::registerItem($item);
     }
 
@@ -89,8 +89,8 @@ class CustomItem extends PluginBase
      */
     protected function onEnable(): void
     {
-        $this->start($this);
         $this->saveConfig();
+        $this->start($this);
     }
 
     /*
