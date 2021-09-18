@@ -142,10 +142,10 @@ trait UtilsTrait
                     CustomItem::registerItem($leggings);
                     break;
                 case "chestplate":
-                    $chesplate = CustomItem::createChesPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 2), $key["name"]);
-                    $chesplate->setTexture($key["texture"]);
+                    $chestplate = CustomItem::createChestPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 2), $key["name"]);
+                    $chestplate->setTexture($key["texture"]);
 
-                    CustomItem::registerItem($chesplate);
+                    CustomItem::registerItem($chestplate);
                     break;
                 case "helmet":
                     $helmet = CustomItem::createHelmetItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 3), $key["name"]);

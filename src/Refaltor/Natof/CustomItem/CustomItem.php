@@ -79,7 +79,7 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = self::createPickaxe(new ItemIdentifier(1000, 0), 'pioche en natof', 1, 100, 5);
+        $item = self::createPickaxe(new ItemIdentifier(5800, 0), 'pioche en natof', 1, 100, 5);
         $item->setTexture('iron_pickaxe');
         self::registerItem($item);
     }
@@ -119,7 +119,7 @@ class CustomItem extends PluginBase
         return new LeggingsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 2), $name);
     }
 
-    public static function createChesPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem
+    public static function createChestPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem
     {
         return new ChestPlateItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 1), $name);
     }
