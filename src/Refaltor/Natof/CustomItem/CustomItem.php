@@ -160,6 +160,9 @@ class CustomItem extends PluginBase
         return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
     }
 
+    public static function createFood(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore, string $group){
+        return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore, $group = "todo");
+    }
 
 
     public static function registerItem(Item $item): void {
@@ -212,7 +215,9 @@ class CustomItem extends PluginBase
                     ->setTag("item_properties", CompoundTag::create()
                         ->setInt("max_stack_size", $item->getMaxStackSize())
                         ->setInt("use_duration", 32)
-                        ->setInt("use_animation", 0)
+                        ->setInt("use_animation", 1)
+                        ->setInt("creative_category", 3)
+                        ->setString("creative_group", "itemGroup.name.miscFood")
                     )
                     ->setTag("minecraft:icon", CompoundTag::create()
                         ->setString("texture", $item->getTexture())
@@ -220,7 +225,7 @@ class CustomItem extends PluginBase
                     ->setTag('minecraft:food', CompoundTag::create()
                         ->setByte('can_always_eat', 1)
                         ->setFloat('nutrition', $item->getFoodRestore())
-                        ->setString('saturation_modifier', 'low')
+                        ->setString('saturation_modifier', 'higth')
                     )
                     ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
                     ->setTag("minecraft:display_name", CompoundTag::create()

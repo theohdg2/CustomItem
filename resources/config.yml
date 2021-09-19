@@ -69,3 +69,9 @@ item:
     durability: 1000
     defense: 2
 
+  food:
+    id: 1069
+    name: "food_config"
+    texture: "emerald_sword"
+    restore: 10
+    saturation: 1
