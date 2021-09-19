@@ -20,8 +20,12 @@
 namespace Refaltor\Natof\CustomItem\Events\Listeners;
 
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use Refaltor\Natof\CustomItem\CustomItem;
+use Refaltor\Natof\CustomItem\Items\FoodItem;
 
 class PlayerListener implements Listener
 {
@@ -39,5 +43,20 @@ class PlayerListener implements Listener
     public function onJoin(PlayerJoinEvent $event): void {
         $player = $event->getPlayer();
         $player->getNetworkSession()->sendDataPacket($this->main->packet);
+    }
+
+    public function onConsume(PlayerItemConsumeEvent $event) {
+        $item = $event->getItem();
+        $player = $event->getPlayer();
+        if ($item instanceof FoodItem) {
+            $item = $item->setCount($item->getCount() - 1);
+            $foodRestore = $item->getFoodRestore();
+            $saturation = $item->getSaturationRestore();
+            $player->getHungerManager()->addFood($foodRestore);
+            $player->getHungerManager()->addSaturation($saturation);
+            if ($item->getCount() <= 0) {
+                $player->getInventory()->setItemInHand(ItemFactory::air());
+            }
+        }
     }
 }
