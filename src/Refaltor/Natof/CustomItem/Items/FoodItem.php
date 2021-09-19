@@ -45,22 +45,7 @@ class FoodItem extends Food
     /** @var int  */
     private int $saturationRestore;
 
-    /** @var null | callable */
-    private $attackListener = null;
-
-    /** @var null | callable */
-    private $interactOnBlockListener = null;
-
-    /** @var null | callable */
-    private $destroyBlockListener = null;
-
-    /** @var null | callable */
-    private $clickAirListener = null;
-
-    /** @var null | callable */
-    private $releaseUsingListener = null;
-
-
+    private string $group;
 
     /**
      * BasicItem constructor.
@@ -69,8 +54,9 @@ class FoodItem extends Food
      * @param int $foodRestore
      * @param float $saturationRestore
      */
-    public function __construct(ItemIdentifier $identifier, string $name, int $foodRestore, float $saturationRestore)
+    public function __construct(ItemIdentifier $identifier, string $name, int $foodRestore, float $saturationRestore, string $group)
     {
+        $this->group = $group;
         $this->texturePath = 'blocks/barrier';
         $this->maxStackSize = 64;
         $this->saturationRestore = $saturationRestore;
@@ -115,6 +101,16 @@ class FoodItem extends Food
     }
 
 
+
+    public function setGroup(string $group): self {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function getGroup(): int{
+        return $this->group;
+    }
+
     /**
      * @return int
      */
@@ -128,112 +124,5 @@ class FoodItem extends Food
      */
     public function getSaturationRestore(): float{
         return $this->saturationRestore;
-    }
-
-    /**
-     * Parameters: Entity $victim
-     * @param callable $listener
-     */
-    public function setAttackEntityListener(callable $listener): void {
-        $this->attackListener = $listener;
-    }
-
-
-    /**
-     * @param Entity $victim
-     * @return bool
-     */
-    public function onAttackEntity(Entity $victim): bool
-    {
-        if (!is_null($this->attackListener)) {
-            call_user_func($this->attackListener, $victim);
-        }
-        return parent::onAttackEntity($victim);
-    }
-
-
-    /**
-     * Parameters: Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector
-     *
-     * @param callable $listener
-     */
-    public function setInteractOnBlockListener(callable $listener): void {
-        $this->interactOnBlockListener = $listener;
-    }
-
-
-    /**
-     * @param Player $player
-     * @param Block $blockReplace
-     * @param Block $blockClicked
-     * @param int $face
-     * @param Vector3 $clickVector
-     * @return ItemUseResult
-     */
-    public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector): ItemUseResult
-    {
-        if (!is_null($this->interactOnBlockListener)) {
-            call_user_func($this->interactOnBlockListener, $player, $blockReplace, $blockClicked, $face, $clickVector);
-        }
-        return parent::onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector);
-    }
-
-
-    /**
-     * Parameters: Block $block
-     *
-     * @param callable $listener
-     */
-    public function setDestroyBlockListener(callable $listener): void {
-        $this->destroyBlockListener = $listener;
-    }
-
-    public function onDestroyBlock(Block $block): bool
-    {
-        if (!is_null($this->destroyBlockListener)) call_user_func($this->destroyBlockListener, $block);
-        return parent::onDestroyBlock($block);
-    }
-
-
-    /**
-     * Parameters: Player $player, Vector3 $directionVector
-     *
-     * @param callable $listener
-     */
-    public function setClickAirListener(callable $listener): void {
-        $this->clickAirListener = $listener;
-    }
-
-
-    /**
-     * @param Player $player
-     * @param Vector3 $directionVector
-     * @return ItemUseResult
-     */
-    public function onClickAir(Player $player, Vector3 $directionVector): ItemUseResult
-    {
-        if (!is_null($this->clickAirListener)) call_user_func($this->clickAirListener, $player, $directionVector);
-        return parent::onClickAir($player, $directionVector);
-    }
-
-
-    /**
-     * Parameters: Player $player
-     *
-     * @param callable $listener
-     */
-    public function setReleaseUsingListener(callable $listener): void {
-        $this->releaseUsingListener = $listener;
-    }
-
-
-    /**
-     * @param Player $player
-     * @return ItemUseResult
-     */
-    public function onReleaseUsing(Player $player): ItemUseResult
-    {
-        if (!is_null($this->releaseUsingListener)) call_user_func($this->releaseUsingListener, $player);
-        return parent::onReleaseUsing($player);
     }
 }

@@ -173,6 +173,12 @@ trait UtilsTrait
 
                     CustomItem::registerItem($axe);
                     break;
+                case "food":
+                    $food = CustomItem::createFood(new ItemIdentifier($key["id"], 0), $key["name"], $key["restore"], $key["saturation"], "aaaa");
+                    $food->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($food);
+                    break;
             }
         }
     }
