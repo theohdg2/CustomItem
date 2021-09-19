@@ -40,6 +40,18 @@ use Refaltor\Natof\CustomItem\CustomItem;
 
 To get started on our API, here are the basics :
 
+
+Write on your congif.yml
+```YML
+name: YourPlugin
+version: 1.0.0
+api: 4.0.0
+main: Your Main
+softdepend:
+  - CustomItem
+```
+
+
 ```PHP
 // creates an item
 $item = CustomItem::createBasicItem(new ItemIdentifier(1000, 0), 'name');
