@@ -84,7 +84,7 @@ class CustomItem extends PluginBase
 
     public function onLoad(): void
     {
-
+        
     }
 
     /**
