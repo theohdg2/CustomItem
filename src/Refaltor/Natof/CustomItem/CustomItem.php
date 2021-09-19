@@ -77,7 +77,9 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-
+        $item = self::createShovel(new ItemIdentifier(1000, 0), 'pele', 1, 100, 2);
+        $item->setTexture('stick');
+        self::registerItem($item);
     }
 
     /**
