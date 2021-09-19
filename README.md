@@ -14,6 +14,11 @@
 
 ## Quick start
 
+To access the plugin functionality:
+```PHP
+use Refaltor\Natof\CustomItem\CustomItem;
+```
+
 To get started on our API, here are the basics :
 
 ```PHP
