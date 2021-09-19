@@ -62,6 +62,18 @@ $item = CustomItem::createLeggingsItem(new ItemIdentifier(<id>, <meta>), new Arm
 $item = CustomItem::createBootsItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Boots Test');
 ```
 
+## Support Food Item
+> The plugin contains support to add food to the server.
+```PHP
+// to create a food item
+$item = CustomItem::createFoodItem(new ItemIdentifier(<i>, <meta>), 'name', <int food restore>, <float saturation restore>);
+$item->setTexture('steak');
+CustomItem::registerItem($item);
+
+// event for food items
+$item->setConsumeListener(Player $player, Item $item);
+```
+
 
 ## Demo
 
