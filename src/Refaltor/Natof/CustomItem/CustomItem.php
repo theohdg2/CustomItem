@@ -77,9 +77,7 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        $item = CustomItem::createHelmetItem(new ItemIdentifier(1000, 0), new ArmorTypeInfo(2, 100, 0), 'Helmet Test');
-        $item->setTexture('iron_helmet');
-        CustomItem::registerItem($item);
+        
     }
 
     /**
@@ -104,54 +102,142 @@ class CustomItem extends PluginBase
      */
 
 
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @return BasicItem
+     */
     public static function createBasicItem(ItemIdentifier $itemIdentifier, string $name): BasicItem {
         return new BasicItem($itemIdentifier, $name);
     }
 
+
+    /**
+     * @param ItemIdentifier $identifier
+     * @param ArmorTypeInfo $armorTypeInfo
+     * @param string $name
+     * @return BootsItem
+     */
     public static function createBootsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : BootsItem {
         return new BootsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 3), $name);
     }
 
-    public static function createLeggingsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : LeggingsItem
-    {
+
+    /**
+     * @param ItemIdentifier $identifier
+     * @param ArmorTypeInfo $armorTypeInfo
+     * @param string $name
+     * @return LeggingsItem
+     */
+    public static function createLeggingsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : LeggingsItem{
         return new LeggingsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 2), $name);
     }
 
-    public static function createChestPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem
-    {
+
+    /**
+     * @param ItemIdentifier $identifier
+     * @param ArmorTypeInfo $armorTypeInfo
+     * @param string $name
+     * @return ChestPlateItem
+     */
+    public static function createChestPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem{
         return new ChestPlateItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 1), $name);
     }
 
-    public static function createHelmetItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : HelmetItem
-    {
+
+    /**
+     * @param ItemIdentifier $identifier
+     * @param ArmorTypeInfo $armorTypeInfo
+     * @param string $name
+     * @return HelmetItem
+     */
+    public static function createHelmetItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : HelmetItem{
         return new HelmetItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 0), $name);
     }
 
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param ArmorTypeInfo $armorTypeInfo
+     * @param string $name
+     * @return ArmorItem
+     */
     public static function createArmorItem(ItemIdentifier $itemIdentifier, ArmorTypeInfo $armorTypeInfo, string $name): ArmorItem {
         return new ArmorItem($itemIdentifier, $armorTypeInfo, $name);
     }
 
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param int $foodRestore
+     * @param float $saturationRestore
+     * @return FoodItem
+     */
     public static function createFoodItem(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore): FoodItem {
         return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore);
     }
 
-    public static function createSword(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param float $damage
+     * @param float $durability
+     * @return SwordItem
+     */
+    public static function createSword(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability): SwordItem{
         return new SwordItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
-    public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param float $damage
+     * @param float $durability
+     * @param float $efficiency
+     * @return AxeItem
+     */
+    public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): AxeItem{
         return new AxeItem($itemIdentifier, $name, ToolTier::IRON(), $damage, $durability, $efficiency);
     }
 
-    public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param float $damage
+     * @param float $durability
+     * @param float $efficiency
+     * @return ShovelItem
+     */
+    public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): ShovelItem{
         return new ShovelItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
     }
 
-    public static function createHoe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability){
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param float $damage
+     * @param float $durability
+     * @return HoeItem
+     */
+    public static function createHoe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability): HoeItem{
         return new HoeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
     }
 
-    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency){
+
+    /**
+     * @param ItemIdentifier $itemIdentifier
+     * @param string $name
+     * @param float $damage
+     * @param float $durability
+     * @param float $efficiency
+     * @return PickaxeItem
+     */
+    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): PickaxeItem{
         return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
     }
 

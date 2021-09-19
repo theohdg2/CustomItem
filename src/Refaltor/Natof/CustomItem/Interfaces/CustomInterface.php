@@ -29,6 +29,6 @@ interface CustomInterface
     ];
 
     const CATEGORY_CREATIVE = [
-        // TODO
+        ''
     ];
 }
