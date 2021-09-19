@@ -54,6 +54,9 @@ class PlayerListener implements Listener
             $saturation = $item->getSaturationRestore();
             $player->getHungerManager()->addFood($foodRestore);
             $player->getHungerManager()->addSaturation($saturation);
+            if (!is_null($item->getConsumeListener())) {
+                call_user_func($item->getConsumeListener(), $player, $item);
+            }
             if ($item->getCount() <= 0) {
                 $player->getInventory()->setItemInHand(ItemFactory::air());
             }

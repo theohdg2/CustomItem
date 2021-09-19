@@ -77,7 +77,7 @@ class CustomItem extends PluginBase
 
     protected function onLoad(): void
     {
-        
+
     }
 
     /**
@@ -175,7 +175,7 @@ class CustomItem extends PluginBase
      * @return FoodItem
      */
     public static function createFoodItem(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore): FoodItem {
-        return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore);
+        return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore, 'aaaa');
     }
 
 

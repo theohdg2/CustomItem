@@ -72,6 +72,6 @@ item:
   food:
     id: 1069
     name: "food_config"
-    texture: "emerald_sword"
+    texture: "steak"
     restore: 10
     saturation: 1
