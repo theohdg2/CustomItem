@@ -96,7 +96,7 @@ $item->setConsumeListener(Player $player, Item $item);
 
 ## Demo
 
-ici natof il y aura les plugins exemple
+Futur
 
 ## TODO
 
