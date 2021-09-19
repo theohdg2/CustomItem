@@ -22,21 +22,17 @@ namespace Refaltor\Natof\CustomItem\Traits;
 use Exception;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\ArmorTypeInfo;
-use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
-use pocketmine\Server;
-use pocketmine\utils\Config;
 use Refaltor\Natof\CustomItem\Events\Listeners\PacketListener;
 use Refaltor\Natof\CustomItem\Events\Listeners\PlayerListener;
 use Refaltor\Natof\CustomItem\CustomItem;
 use ReflectionException;
 use ReflectionObject;
-use Webmozart\PathUtil\Path;
 use const pocketmine\RESOURCE_PATH;
 
 trait UtilsTrait
