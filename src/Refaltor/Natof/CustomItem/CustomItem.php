@@ -158,17 +158,6 @@ class CustomItem extends PluginBase
 
     /**
      * @param ItemIdentifier $itemIdentifier
-     * @param ArmorTypeInfo $armorTypeInfo
-     * @param string $name
-     * @return ArmorItem
-     */
-    public static function createArmorItem(ItemIdentifier $itemIdentifier, ArmorTypeInfo $armorTypeInfo, string $name): ArmorItem {
-        return new ArmorItem($itemIdentifier, $armorTypeInfo, $name);
-    }
-
-
-    /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param int $foodRestore
      * @param float $saturationRestore

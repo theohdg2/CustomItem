@@ -48,7 +48,7 @@ class PlayerListener implements Listener
     public function onConsume(PlayerItemConsumeEvent $event) {
         $item = $event->getItem();
         $player = $event->getPlayer();
-        if ($item instanceof FoodItem) {
+        if ($item instanceof FoodItem && $player->getHungerManager()->getFood() != $player->getHungerManager()->getMaxFood()) {
             $item = $item->setCount($item->getCount() - 1);
             $foodRestore = $item->getFoodRestore();
             $saturation = $item->getSaturationRestore();
