@@ -112,6 +112,6 @@ Futur
 
 ## TODO
 
-* [ ] Food Bugs Fix
-* [ ] Armor Equip Fix
+* [x] Food Bugs Fix
+* [x] Armor Equip Fix
 * [x] Pickaxe Mining fix 1/2
