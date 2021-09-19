@@ -9,11 +9,30 @@
 
 > **Note:** Creates issues if you find bugs :)
 
-## Features
-* Food Fix Bugs
+## Plugins
+_**Your Imagination no longer imitates it. Create, invent your Mod would like to have on your server**_
 
-## Quick start
+* Armor 🛡️
+* Sword ⚔️
+* Tools ⚒️
+* Food 🥔
 
+**We offer You A Config For beginners But also, for more to free an API !!!**
+
+ **This plugin is made for pocketmine 4 but has a pocketmine 3 version.**
+
+## Config
+To create items in The config file :
+```yml
+  item:
+    basic:
+      id: 1059 #ID Of Item
+      name: "basic_config" #Name of item do not use a shift
+      texture: "stick" #texture in pack
+```
+All the examples are in the YMl file : https://github.com/Big-Potatoes/CustomItem/blob/main/resources/config.yml
+
+## API
 To access the plugin functionality:
 ```PHP
 use Refaltor\Natof\CustomItem\CustomItem;
