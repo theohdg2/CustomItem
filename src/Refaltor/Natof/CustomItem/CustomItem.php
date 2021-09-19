@@ -20,15 +20,17 @@
 namespace Refaltor\Natof\CustomItem;
 
 use Exception;
-use pocketmine\item\ArmorTypeInfo;
+use pocketmine\item\Armor;
+use pocketmine\item\Food;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIdentifier;
-use pocketmine\item\ToolTier;
+use pocketmine\item\TieredTool;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\ItemComponentPacket;
-use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\plugin\PluginBase;
-use Refaltor\Natof\CustomItem\Items\ArmorItem;
 use Refaltor\Natof\CustomItem\Items\AxeItem;
 use Refaltor\Natof\CustomItem\Items\BasicItem;
 use Refaltor\Natof\CustomItem\Items\BootsItem;
@@ -41,6 +43,11 @@ use Refaltor\Natof\CustomItem\Items\PickaxeItem;
 use Refaltor\Natof\CustomItem\Items\ShovelItem;
 use Refaltor\Natof\CustomItem\Items\SwordItem;
 use Refaltor\Natof\CustomItem\Traits\UtilsTrait;
+use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\ItemTypeDictionary;
+use pocketmine\network\mcpe\protocol\ItemComponentPacket;
+use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
+use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 
 class CustomItem extends PluginBase
 {
@@ -57,13 +64,13 @@ class CustomItem extends PluginBase
     /** @var array */
     private static array $queue = [];
 
-    /** @var ItemComponentPacketEntry[] */
+    /** @var ItemComponentPacket[] */
     private static array $components = [];
 
-    /** @var ItemComponentPacket|null  */
+    /** @var ItemComponentPacket|null */
     public ?ItemComponentPacket $packet = null;
 
-    /** @var array  */
+    /** @var array */
     private array $coreToNetValues = [];
 
     /** @var array */
@@ -75,7 +82,7 @@ class CustomItem extends PluginBase
     /** @var array */
     private array $simpleNetToCoreMapping = [];
 
-    protected function onLoad(): void
+    public function onLoad(): void
     {
 
     }
@@ -83,7 +90,7 @@ class CustomItem extends PluginBase
     /**
      * @throws Exception
      */
-    protected function onEnable(): void
+    public function onEnable(): void
     {
         $this->start($this);
     }
@@ -103,346 +110,334 @@ class CustomItem extends PluginBase
 
 
     /**
-     * @param ItemIdentifier $itemIdentifier
+     * @param Item
      * @param string $name
      * @return BasicItem
      */
-    public static function createBasicItem(ItemIdentifier $itemIdentifier, string $name): BasicItem {
-        return new BasicItem($itemIdentifier, $name);
+    public static function createBasicitem(int $id, int $meta, string $name): BasicItem
+    {
+        return new BasicItem($id, $meta, $name);
     }
 
-
     /**
-     * @param ItemIdentifier $identifier
-     * @param ArmorTypeInfo $armorTypeInfo
      * @param string $name
      * @return BootsItem
      */
-    public static function createBootsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : BootsItem {
-        return new BootsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 3), $name);
+    public static function createBootsItem(int $id, int $meta, string $name, int $defense, int $durability, string $texturePath): BootsItem
+    {
+        return new BootsItem($id, $meta, $name, $defense, $durability, $texturePath);
     }
 
-
     /**
-     * @param ItemIdentifier $identifier
-     * @param ArmorTypeInfo $armorTypeInfo
      * @param string $name
      * @return LeggingsItem
      */
-    public static function createLeggingsItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : LeggingsItem{
-        return new LeggingsItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 2), $name);
+    public static function createLegginsItem(int $id, int $meta, string $name, int $defense, int $durability, string $texturePath): LeggingsItem
+    {
+        return new LeggingsItem($id, $meta, $name, $defense, $durability, $texturePath);
     }
 
-
     /**
-     * @param ItemIdentifier $identifier
-     * @param ArmorTypeInfo $armorTypeInfo
      * @param string $name
      * @return ChestPlateItem
      */
-    public static function createChestPlateItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : ChestPlateItem{
-        return new ChestPlateItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 1), $name);
+    public static function createChestPlateItem(int $id, int $meta, string $name, int $defense, int $durability, string $texturePath): ChestPlateItem
+    {
+        return new ChestPlateItem($id, $meta, $name, $defense, $durability, $texturePath);
     }
 
-
     /**
-     * @param ItemIdentifier $identifier
-     * @param ArmorTypeInfo $armorTypeInfo
      * @param string $name
      * @return HelmetItem
      */
-    public static function createHelmetItem(ItemIdentifier $identifier, ArmorTypeInfo $armorTypeInfo, string $name) : HelmetItem{
-        return new HelmetItem($identifier, new ArmorTypeInfo($armorTypeInfo->getDefensePoints(), $armorTypeInfo->getMaxDurability(), 0), $name);
+    public static function createHelmetItem(int $id, int $meta, string $name, int $defense, int $durability, string $texturePath): HelmetItem
+    {
+        return new HelmetItem($id, $meta, $name, $defense, $durability, $texturePath);
     }
 
 
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param int $foodRestore
      * @param float $saturationRestore
      * @return FoodItem
      */
-    public static function createFoodItem(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore): FoodItem {
-        return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore, 'aaaa');
+    public static function createFoodItem(int $id, int $meta, string $name, int $foodRestore, float $saturationRestore, string $group = 'todo'): FoodItem
+    {
+        return new FoodItem($id, $meta, $name, $foodRestore, $saturationRestore, $group);
     }
 
-
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param float $damage
      * @param float $durability
      * @return SwordItem
      */
-    public static function createSword(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability): SwordItem{
-        return new SwordItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    public static function createSword(int $id, int $meta, string $name, int $tier, int $damageSword, int $durability): SwordItem
+    {
+        return new SwordItem($id, $meta, $name, $tier, $damageSword, $durability);
     }
 
 
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param float $damage
      * @param float $durability
      * @param float $efficiency
      * @return AxeItem
      */
-    public static function createAxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): AxeItem{
-        return new AxeItem($itemIdentifier, $name, ToolTier::IRON(), $damage, $durability, $efficiency);
+    public static function createAxe(int $id, int $meta, string $name, int $tier, float $damageTools, float $durability, float $efficiency): AxeItem
+    {
+        return new AxeItem($id, $meta, $name, $tier, $damageTools, $durability, $efficiency);
     }
 
-
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param float $damage
      * @param float $durability
      * @param float $efficiency
      * @return ShovelItem
      */
-    public static function createShovel(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): ShovelItem{
-        return new ShovelItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
+    public static function createShovel(int $id, int $meta, string $name, int $tier, float $damageTools, float $durability, float $efficiency): ShovelItem
+    {
+        return new ShovelItem($id, $meta, $name, $tier, $damageTools, $durability, $efficiency);
     }
 
 
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param float $damage
      * @param float $durability
      * @return HoeItem
      */
-    public static function createHoe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability): HoeItem{
-        return new HoeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability);
+    public static function createHoe(int $id, int $meta, string $name, int $tier, float $damageTools, float $durability): HoeItem
+    {
+        return new HoeItem($id, $meta, $name, $tier, $damageTools, $durability);
     }
 
-
     /**
-     * @param ItemIdentifier $itemIdentifier
      * @param string $name
      * @param float $damage
      * @param float $durability
      * @param float $efficiency
      * @return PickaxeItem
      */
-    public static function createPickaxe(ItemIdentifier $itemIdentifier, string $name, float $damage, float $durability, float $efficiency): PickaxeItem{
-        return new PickaxeItem($itemIdentifier, $name, ToolTier::DIAMOND(), $damage, $durability, $efficiency);
+    public static function createPickaxe(int $id, int $meta, string $name, int $tier, float $damageTools, float $durability, float $efficiency): PickaxeItem
+    {
+        return new PickaxeItem($id, $meta, $name, $tier, $damageTools, $durability, $efficiency);
     }
 
-    public static function createFood(ItemIdentifier $itemIdentifier, string $name, int $foodRestore, float $saturationRestore, string $group){
-        return new FoodItem($itemIdentifier, $name, $foodRestore, $saturationRestore, $group = "todo");
-    }
-
-
-    public static function registerItem(Item $item): void {
+    public static function registerItem(Item $item): void
+    {
         $components = null;
         if ($item instanceof bootsItem || $item instanceof LeggingsItem || $item instanceof ChestPlateItem || $item instanceof HelmetItem) {
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setInt("use_duration", 32)
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", $item->getArmorGroup())
-                        ->setString("enchantable_slot", $item->getArmorSlot())
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setTag("minecraft:armor", CompoundTag::create()
-                        ->setInt("protection", $item->getDefensePoints())
-                    )
-                    ->setTag("minecraft:wearable", CompoundTag::create()
-                        ->setInt("slot", $item->getArmorSlot())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new IntTag("use_duration", 32),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", $item->getArmorGroup()),
+                            new StringTag("enchantable_slot", $item->getArmorSlot())
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())
+                        ]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new CompoundTag("minecraft:armor", [
+                            new IntTag("protection", $item->getDefensePoints())
+                        ]),
+                        new CompoundTag("minecraft:wearable", [
+                            new IntTag("slot", $item->getArmorSlot())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
         } elseif ($item instanceof BasicItem) {
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", $item->getMaxStackSize())
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", $item->getMaxStackSize())]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())])
+                    ])
+                ]);
         } elseif ($item instanceof FoodItem) {
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", $item->getMaxStackSize())
-                        ->setInt("use_duration", 32)
-                        ->setInt("use_animation", 1)
-                        ->setInt("creative_category", 3)
-                        ->setString("creative_group", "itemGroup.name.miscFood")
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag('minecraft:food', CompoundTag::create()
-                        ->setByte('can_always_eat', 1)
-                        ->setFloat('nutrition', $item->getFoodRestore())
-                        ->setString('saturation_modifier', 'higth')
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
-        } elseif ($item instanceof SwordItem){
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setByte("hand_equipped", true)
-                        ->setInt("damage", $item->getAttackPoints())
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", "itemGroup.name.sword")
-                        ->setString("enchantable_slot", "sword")
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "event")
-                        )
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
-
-        } elseif ($item instanceof PickaxeItem){
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setByte("hand_equipped", true)
-                        ->setInt("damage", $item->getAttackPoints())
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", "itemGroup.name.pickaxe")
-                        ->setString("enchantable_slot", "pickaxe")
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "event")
-                        )
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
-        } elseif ($item instanceof AxeItem){
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setByte("hand_equipped", true)
-                        ->setInt("damage", $item->getAttackPoints())
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", "itemGroup.name.axe")
-                        ->setString("enchantable_slot", "axe")
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "event")
-                        )
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
-        } elseif ($item instanceof ShovelItem){
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setByte("hand_equipped", true)
-                        ->setInt("damage", $item->getAttackPoints())
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", "itemGroup.name.shovel")
-                        ->setString("enchantable_slot", "shovel")
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "event")
-                        )
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
-        }   elseif ($item instanceof HoeItem){
-            $components = CompoundTag::create()
-                ->setTag("components", CompoundTag::create()
-                    ->setTag("item_properties", CompoundTag::create()
-                        ->setInt("max_stack_size", 1)
-                        ->setByte("hand_equipped", true)
-                        ->setInt("damage", $item->getAttackPoints())
-                        ->setInt("creative_category", $item->getCreativeCategory())
-                        ->setString("creative_group", "itemGroup.name.hoe")
-                        ->setString("enchantable_slot", "hoe")
-                        ->setInt("enchantable_value", 10)
-                    )
-                    ->setTag("minecraft:weapon", CompoundTag::create()
-                        ->setTag("on_hurt_entity", CompoundTag::create()
-                            ->setString("event", "event")
-                        )
-                    )
-                    ->setTag("minecraft:icon", CompoundTag::create()
-                        ->setString("texture", $item->getTexture())
-                    )
-                    ->setTag("minecraft:durability", CompoundTag::create()
-                        ->setInt("max_durability", $item->getMaxDurability())
-                    )
-                    ->setShort("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000))
-                    ->setTag("minecraft:display_name", CompoundTag::create()
-                        ->setString("value", $item->getName())
-                    )
-                );
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", $item->getMaxStackSize()),
+                            new IntTag("use_duration", 32),
+                            new IntTag("use_animation", 1),
+                            new IntTag("creative_category", 3),
+                            new StringTag("creative_group", "itemGroup.name.miscFood")]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:food", [
+                            new ByteTag("can_always_eat", 1),
+                            new FloatTag("saturation_modifier", $item->getFoodRestore())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())])
+                    ])
+                ]);
+        } elseif ($item instanceof SwordItem) {
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new ByteTag("hand_equipped", true),
+                            new IntTag("damage", $item->getAttackPoints()),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", "itemGroup.name.sword"),
+                            new StringTag("enchantable_slot", "sword"),
+                            new IntTag("enchantable_value", 10)
+                        ]),
+                        new CompoundTag("minecraft:weapon", [
+                            new CompoundTag("on_hurt_entity", [
+                                new StringTag("event", "event")
+                            ])
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
+        } elseif ($item instanceof PickaxeItem) {
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new ByteTag("hand_equipped", true),
+                            new IntTag("damage", $item->getAttackPoints()),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", "itemGroup.name.pickaxe"),
+                            new StringTag("enchantable_slot", "pickaxe"),
+                            new IntTag("enchantable_value", 10)
+                        ]),
+                        new CompoundTag("minecraft:weapon", [
+                            new CompoundTag("on_hurt_entity", [
+                                new StringTag("event", "event")
+                            ])
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
+        } elseif ($item instanceof AxeItem) {
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new ByteTag("hand_equipped", true),
+                            new IntTag("damage", $item->getAttackPoints()),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", "itemGroup.name.axe"),
+                            new StringTag("enchantable_slot", "axe"),
+                            new IntTag("enchantable_value", 10)
+                        ]),
+                        new CompoundTag("minecraft:weapon", [
+                            new CompoundTag("on_hurt_entity", [
+                                new StringTag("event", "event")
+                            ])
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
+        } elseif ($item instanceof ShovelItem) {
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new ByteTag("hand_equipped", true),
+                            new IntTag("damage", $item->getAttackPoints()),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", "itemGroup.name.shovel"),
+                            new StringTag("enchantable_slot", "shovel"),
+                            new IntTag("enchantable_value", 10)
+                        ]),
+                        new CompoundTag("minecraft:weapon", [
+                            new CompoundTag("on_hurt_entity", [
+                                new StringTag("event", "event")
+                            ])
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
+        } elseif ($item instanceof HoeItem) {
+            $components =
+                new CompoundTag("", [
+                    new CompoundTag("components", [
+                        new CompoundTag("item_properties", [
+                            new IntTag("max_stack_size", 1),
+                            new ByteTag("hand_equipped", true),
+                            new IntTag("damage", $item->getAttackPoints()),
+                            new IntTag("creative_category", $item->getCreativeCategory()),
+                            new StringTag("creative_group", "itemGroup.name.hoe"),
+                            new StringTag("enchantable_slot", "hoe"),
+                            new IntTag("enchantable_value", 10)
+                        ]),
+                        new CompoundTag("minecraft:weapon", [
+                            new CompoundTag("on_hurt_entity", [
+                                new StringTag("event", "event")
+                            ])
+                        ]),
+                        new CompoundTag("minecraft:icon", [
+                            new StringTag("texture", $item->getTexture())]),
+                        new CompoundTag("minecraft:durability", [
+                            new IntTag("max_durability", $item->getMaxStackSize())
+                        ]),
+                        new ShortTag("minecraft:identifier", $item->getId() + ($item->getId() > 0 ? 5000 : -5000)),
+                        new CompoundTag("minecraft:display_name", [
+                            new StringTag("value", $item->getName())
+                        ])
+                    ])
+                ]);
         }
         array_push(self::$components, new ItemComponentPacketEntry('minecraft:' . $item->getName(), $components));
         array_push(self::$queue, $item);

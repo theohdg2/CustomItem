@@ -22,14 +22,14 @@ namespace Refaltor\Natof\CustomItem\Events\Listeners;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\VanillaItems;
+use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use Refaltor\Natof\CustomItem\CustomItem;
 use Refaltor\Natof\CustomItem\Items\FoodItem;
 
 class PlayerListener implements Listener
 {
-    /** @var CustomItem  */
+    /** @var CustomItem */
     public CustomItem $main;
 
     public array $items;
@@ -40,26 +40,27 @@ class PlayerListener implements Listener
         $this->items = [];
     }
 
-    public function onJoin(PlayerJoinEvent $event): void {
+    public function onJoin(PlayerJoinEvent $event): void
+    {
         $player = $event->getPlayer();
-        $player->getNetworkSession()->sendDataPacket($this->main->packet);
+        $player->sendDataPacket($this->main->packet);
+        var_dump("cc");
     }
 
-    public function onConsume(PlayerItemConsumeEvent $event) {
+    public function onConsume(PlayerItemConsumeEvent $event)
+    {
         $item = $event->getItem();
         $player = $event->getPlayer();
-        if ($item instanceof FoodItem && $player->getHungerManager()->getFood() != $player->getHungerManager()->getMaxFood()) {
+        if ($item instanceof FoodItem && $player->getFood() != $player->getMaxFood()) {
             $item = $item->setCount($item->getCount() - 1);
             $foodRestore = $item->getFoodRestore();
             $saturation = $item->getSaturationRestore();
-            $player->getHungerManager()->addFood($foodRestore);
-            $player->getHungerManager()->addSaturation($saturation);
-            if (!is_null($item->getConsumeListener())) {
-                call_user_func($item->getConsumeListener(), $player, $item);
-            }
+            $player->addFood($foodRestore);
+            $player->addSaturation($saturation);
             if ($item->getCount() <= 0) {
-                $player->getInventory()->setItemInHand(ItemFactory::air());
+                $player->getInventory()->setItemInHand(Item::get(ItemIds::AIR));
             }
         }
     }
+
 }

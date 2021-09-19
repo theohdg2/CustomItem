@@ -20,20 +20,20 @@
 namespace Refaltor\Natof\CustomItem\Traits;
 
 use Exception;
-use FG\ASN1\Identifier;
-use pocketmine\inventory\CreativeInventory;
-use pocketmine\item\ArmorTypeInfo;
+use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIdentifier;
-use pocketmine\network\mcpe\convert\ItemTranslator;
-use pocketmine\network\mcpe\protocol\ItemComponentPacket;
-use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+use pocketmine\item\TieredTool;
 use Refaltor\Natof\CustomItem\Events\Listeners\PacketListener;
 use Refaltor\Natof\CustomItem\Events\Listeners\PlayerListener;
 use Refaltor\Natof\CustomItem\CustomItem;
 use ReflectionException;
 use ReflectionObject;
+use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\ItemTypeDictionary;
+use pocketmine\network\mcpe\protocol\ItemComponentPacket;
+use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
+use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+
 use const pocketmine\RESOURCE_PATH;
 
 trait UtilsTrait
@@ -41,7 +41,8 @@ trait UtilsTrait
     /**
      * @param CustomItem $customItem
      */
-    private function registerEvents(CustomItem $customItem): void {
+    private function registerEvents(CustomItem $customItem): void
+    {
         $events = [new PacketListener($customItem), new PlayerListener($customItem)];
         foreach ($events as $event) $customItem->getServer()->getPluginManager()->registerEvents($event, $customItem);
     }
@@ -50,7 +51,8 @@ trait UtilsTrait
      * @param CustomItem $customItem
      * @throws ReflectionException
      */
-    private function loadDataFiles(CustomItem $customItem): void {
+    private function loadDataFiles(CustomItem $customItem): void
+    {
         $array = ["r16_to_current_item_map" => ["simple" => []], "item_id_map" => [], "required_item_list" => []];
         foreach (self::$queue as $item) {
             $array['r16_to_current_item_map']['simple']['minecraft:' . $item->getName()] = 'minecraft:' . $item->getName();
@@ -98,12 +100,12 @@ trait UtilsTrait
             }
         }
         foreach (self::$queue as $item) {
-            if (!ItemFactory::getInstance()->isRegistered($item->getId())) {
-                ItemFactory::getInstance()->register($item);
-                CreativeInventory::getInstance()->add($item);
+            if (!ItemFactory::isRegistered($item->getId())) {
+                ItemFactory::registerItem($item);
+                Item::addCreativeItem($item);
             } else {
-                ItemFactory::getInstance()->register($item, true);
-                CreativeInventory::getInstance()->add($item);
+                ItemFactory::registerItem($item, true);
+                Item::addCreativeItem($item);
             }
         }
         $instance = ItemTranslator::getInstance();
@@ -116,74 +118,63 @@ trait UtilsTrait
         $r2->setValue($instance, $customItem->simpleNetToCoreMapping);
     }
 
-    public function loadConfigFile(){
+    public function loadConfigFile()
+    {
         $config = $this->getConfig();
         foreach ($config->get("item") as $item => $key) {
-            switch ($item){
+            switch ($item) {
                 case "basic":
-                    $basic = CustomItem::createBasicItem(new ItemIdentifier($key["id"], 0), $key["name"]);
+                    $basic = CustomItem::createBasicItem($key["id"], 0, $key["name"]);
                     $basic->setTexture($key["texture"]);
 
                     CustomItem::registerItem($basic);
                     break;
                 case "sword":
-                    $sword = CustomItem::createSword(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"]);
+                    $sword = CustomItem::createSword($key["id"], 0, $key["name"], TieredTool::TIER_DIAMOND, $key["damage"], $key["durability"]);
                     $sword->setTexture($key["texture"]);
 
                     CustomItem::registerItem($sword);
                     break;
                 case "boots":
-                    $boots = CustomItem::createBootsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 0), $key["name"]);
-                    $boots->setTexture($key["texture"]);
-
+                    $boots = CustomItem::createBootsItem($key["id"], 0, $key["name"], $key["defense"], $key["durability"], $key["texture"]);
                     CustomItem::registerItem($boots);
                     break;
                 case "leggings":
-                    $leggings = CustomItem::createLeggingsItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 1), $key["name"]);
-                    $leggings->setTexture($key["texture"]);
+                    $leggings = CustomItem::createLegginsItem($key["id"], 0, $key["name"], $key["defense"], $key["durability"], $key["texture"]);
 
                     CustomItem::registerItem($leggings);
                     break;
                 case "chestplate":
-                    $chestplate = CustomItem::createChestPlateItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 2), $key["name"]);
-                    $chestplate->setTexture($key["texture"]);
-
+                    $chestplate = CustomItem::createChestPlateItem($key["id"], 0, $key["name"], $key["defense"], $key["durability"], $key["texture"]);
                     CustomItem::registerItem($chestplate);
                     break;
                 case "helmet":
-                    $helmet = CustomItem::createHelmetItem(new ItemIdentifier($key["id"], 0), new ArmorTypeInfo($key["defense"], $key["durability"], 3), $key["name"]);
-                    $helmet->setTexture($key["texture"]);
-
+                    $helmet = CustomItem::createHelmetItem($key["id"], 0, $key["name"], $key["defense"], $key["durability"], $key["texture"]);
                     CustomItem::registerItem($helmet);
                     break;
                 case "pickaxe":
-                    $pickaxe = CustomItem::createPickaxe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $pickaxe = CustomItem::createPickaxe($key["id"], 0, $key["name"], TieredTool::TIER_DIAMOND, $key["damage"], $key["durability"], $key["efficiency"]);
                     $pickaxe->setTexture($key["texture"]);
-
                     CustomItem::registerItem($pickaxe);
                     break;
                 case "hoe":
-                    $hoe = CustomItem::createHoe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"]);
+                    $hoe = CustomItem::createHoe($key["id"], 0, $key["name"], TieredTool::TIER_DIAMOND, $key["damage"], $key["durability"]);
                     $hoe->setTexture($key["texture"]);
-
                     CustomItem::registerItem($hoe);
                     break;
                 case "shovel":
-                    $shovel = CustomItem::createShovel(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $shovel = CustomItem::createShovel($key["id"], 0, $key["name"], TieredTool::TIER_DIAMOND, $key["damage"], $key["durability"], $key["efficiency"]);
                     $shovel->setTexture($key["texture"]);
-
                     CustomItem::registerItem($shovel);
                     break;
                 case "axe":
-                    $axe = CustomItem::createAxe(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"], $key["efficiency"]);
+                    $axe = CustomItem::createAxe($key["id"], 0, $key["name"], TieredTool::TIER_DIAMOND, $key["damage"], $key["durability"], $key["efficiency"]);
                     $axe->setTexture($key["texture"]);
-
                     CustomItem::registerItem($axe);
                     break;
                 case "food":
-                    $food = CustomItem::createFood(new ItemIdentifier($key["id"], 0), $key["name"], $key["restore"], $key["saturation"], "aaaa");
+                    $food = CustomItem::createFoodItem($key["id"], 0, $key["name"], $key["restore"], $key["saturation"], "aaaa");
                     $food->setTexture($key["texture"]);
-
                     CustomItem::registerItem($food);
                     break;
             }
@@ -194,7 +185,8 @@ trait UtilsTrait
      * @param CustomItem $customItem
      * @throws Exception
      */
-    public function start(CustomItem $customItem): void{
+    public function start(CustomItem $customItem): void
+    {
         $this->saveConfig();
         $this->loadConfigFile();
         $this->registerEvents($customItem);

@@ -44,10 +44,10 @@ use Refaltor\Natof\CustomItem\Items\ShovelItem;
 
 class PacketListener implements Listener
 {
-    /** @var CustomItem  */
+    /** @var CustomItem */
     public CustomItem $main;
 
-    /** @var array  */
+    /** @var array */
     public array $handlers = [];
 
     public function __construct(CustomItem $main)
@@ -55,13 +55,13 @@ class PacketListener implements Listener
         $this->main = $main;
     }
 
-    public function onPacketSend(DataPacketSendEvent $event) {
-        $packets = $event->getPackets();
-        $targets = $event->getTargets();
-        foreach ($packets as $packet) {
-            if ($packet instanceof StartGamePacket) {
-                $packet->itemTable = $this->main->entries;
-            }
+    public function onPacketSend(DataPacketSendEvent $event)
+    {
+        $packets = $event->getPacket();
+        $targets = $event->getPlayer();
+        if ($packets instanceof StartGamePacket) {
+            $packets->itemTable = $this->main->entries;
         }
     }
+
 }

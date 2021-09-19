@@ -1,9 +1,10 @@
 name: CustomItem
 version: 2.0.0
-api: 4.0.0
+api: 3.0.0
 main: Refaltor\Natof\CustomItem\CustomItem
 description: API to add items
 website: http://potatoes-network.com/
 authors:
   - Refaltor
   - Natof
+  - theohdg2
