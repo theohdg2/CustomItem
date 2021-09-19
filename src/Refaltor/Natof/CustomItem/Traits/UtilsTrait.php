@@ -20,6 +20,7 @@
 namespace Refaltor\Natof\CustomItem\Traits;
 
 use Exception;
+use FG\ASN1\Identifier;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\ArmorTypeInfo;
 use pocketmine\item\ItemFactory;
@@ -119,6 +120,12 @@ trait UtilsTrait
         $config = $this->getConfig();
         foreach ($config->get("item") as $item => $key) {
             switch ($item){
+                case "basic":
+                    $basic = CustomItem::createBasicItem(new ItemIdentifier($key["id"], 0), $key["name"]);
+                    $basic->setTexture($key["texture"]);
+
+                    CustomItem::registerItem($basic);
+                    break;
                 case "sword":
                     $sword = CustomItem::createSword(new ItemIdentifier($key["id"], 0), $key["name"], $key["damage"], $key["durability"]);
                     $sword->setTexture($key["texture"]);
