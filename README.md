@@ -45,7 +45,7 @@ Write on your congif.yml
 ```YML
 name: YourPlugin
 version: 1.0.0
-api: 4.0.0
+api: 3.0.0
 main: Your Main
 softdepend:
   - CustomItem
@@ -54,7 +54,7 @@ softdepend:
 
 ```PHP
 // creates an item
-$item = CustomItem::createBasicItem(new ItemIdentifier(1000, 0), 'name');
+$item = CustomItem::createBasicItem(1000,0, 'name');
 
 // to put a texture to the item
 $item->setTexture('apple');
@@ -67,7 +67,7 @@ CustomItem::registerItem($item);
 
 > The plugin contains support with events for all items, events are used with a callable
 ```PHP
-$item = CustomItem::createBasicItem(new ItemIdentifier(<id>, <meta>), 'name');
+$item = CustomItem::createBasicItem(<id>,<meta>, 'name');
 
 // all available events with the parameters
 
@@ -82,22 +82,22 @@ $item->setAttackEntityListener(Entity $victim);
 > The plugin allows to add real armor with real durability
 ```PHP
 // to create a helmet
-$item = CustomItem::createHelmetItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Helmet Test');
+$item = CustomItem::createHelmetItem(<id>, <meta>,  'Helmet Test',<defense points>, <durability>, <armor slot but it’s not important>);
 $item->setTexture('iron_helmet');
 CustomItem::registerItem($item);
 
 // all the functions of armor
-$item = CustomItem::createHelmetItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Helmet Test');
-$item = CustomItem::createChestplateItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Chestplate Test');
-$item = CustomItem::createLeggingsItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Leggings Test');
-$item = CustomItem::createBootsItem(new ItemIdentifier(<id>, <meta>), new ArmorTypeInfo(<defense points>, <durability>, <armor slot but it’s not important>), 'Boots Test');
+$item = CustomItem::createHelmetItem(<id>, <meta>, 'Helmet Test',<defense points>, <durability>, <armor slot but it’s not important>);
+$item = CustomItem::createChestplateItem(<id>, <meta>,'Chestplate Test',<defense points>, <durability>, <armor slot but it’s not important>);
+$item = CustomItem::createLeggingsItem(<id>, <meta>, 'Leggings Test',<defense points>, <durability>, <armor slot but it’s not important>);
+$item = CustomItem::createBootsItem(<id>, <meta>, 'Boots Test',<defense points>, <durability>, <armor slot but it’s not important>);
 ```
 
 ## Support Food Item
 > The plugin contains support to add food to the server.
 ```PHP
 // to create a food item
-$item = CustomItem::createFoodItem(new ItemIdentifier(<i>, <meta>), 'name', <int food restore>, <float saturation restore>);
+$item = CustomItem::createFoodItem(<id>, <meta>, 'name', <int food restore>, <float saturation restore>);
 $item->setTexture('steak');
 CustomItem::registerItem($item);
 
